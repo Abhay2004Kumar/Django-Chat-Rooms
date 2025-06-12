@@ -6,11 +6,13 @@ export default function Register() {
   const [form, setForm] = useState({ username: '', email: '', password: '' });
   const [photo, setPhoto] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const submit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
       const formData = new FormData();
@@ -27,6 +29,8 @@ export default function Register() {
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.detail || 'Registration failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,7 +39,7 @@ export default function Register() {
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md space-y-6">
         <div className="flex flex-col items-center">
           <div className="bg-green-100 p-4 rounded-full">
-            <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <svg className="w-10 h-10 text-green-600 animate-pulse" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5s-3 1.343-3 3 1.343 3 3 3z" />
               <path d="M19 20v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2" />
             </svg>
@@ -50,6 +54,7 @@ export default function Register() {
             <input
               type="text"
               placeholder="Enter username"
+              disabled={loading}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               onChange={(e) => setForm({ ...form, username: e.target.value })}
               required
@@ -61,6 +66,7 @@ export default function Register() {
             <input
               type="email"
               placeholder="Enter email"
+              disabled={loading}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
@@ -72,6 +78,7 @@ export default function Register() {
             <input
               type="password"
               placeholder="Create a password"
+              disabled={loading}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
@@ -82,6 +89,7 @@ export default function Register() {
             <label className="block mb-1 text-sm font-medium text-gray-700">Profile Photo</label>
             <input
               type="file"
+              disabled={loading}
               accept="image/*"
               className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:border file:rounded-lg file:border-gray-300 file:text-sm file:bg-white file:text-gray-700 hover:file:bg-gray-100"
               onChange={(e) => setPhoto(e.target.files[0])}
@@ -92,9 +100,27 @@ export default function Register() {
 
           <button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition duration-200"
+            disabled={loading}
+            className={`w-full ${
+              loading ? 'bg-green-400' : 'bg-green-600 hover:bg-green-700'
+            } text-white font-semibold py-2 rounded-lg transition duration-200 flex items-center justify-center gap-2`}
           >
-            Sign Up
+            {loading ? (
+              <>
+                <svg
+                  className="w-5 h-5 animate-spin text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <circle cx="12" cy="12" r="10" strokeWidth="4" className="opacity-25" />
+                  <path d="M4 12a8 8 0 018-8" strokeWidth="4" className="opacity-75" />
+                </svg>
+                Signing up...
+              </>
+            ) : (
+              'Sign Up'
+            )}
           </button>
         </form>
 
